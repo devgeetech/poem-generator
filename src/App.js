@@ -51,6 +51,27 @@ function App() {
       });
   };
 
+  const downloadBlob = (blob, filename) => {
+    var a = document.createElement("a");
+    a.download = filename;
+    a.href = blob;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  const downloadResource = (url, filename) => {
+    fetch(url, {
+      mode: "no-cors",
+    })
+      .then((response) => response.blob())
+      .then((blob) => {
+        let blobUrl = window.URL.createObjectURL(blob);
+        downloadBlob(blobUrl, filename);
+      })
+      .catch((e) => console.error(e));
+  };
+
   return (
     <div className="app">
       <div className="content">
@@ -66,6 +87,14 @@ function App() {
         <div>
           {gptResponse && !audioUrl && <p>Loading...</p>}
           {audioUrl && <audio controls autoPlay src={audioUrl} />}
+          {audioUrl && (
+            <button
+              onClick={() => downloadResource(audioUrl, "downloaded_file.mp3")}
+            >
+              {" "}
+              Download
+            </button>
+          )}
         </div>
       </div>
     </div>
